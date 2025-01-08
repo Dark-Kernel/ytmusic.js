@@ -7,7 +7,8 @@ const fixedParms = '?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30';
 const userAgent =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36';
 
-import { getSearchParams } from "./params.js";
+import { getSearchParams } from "./modules/params.js";
+import { extractSongs } from "./modules/search.js";
 
 let headers = {
     'user-agent': userAgent,
@@ -50,13 +51,20 @@ async function search(query) {
     const data = JSON.parse(JSON.stringify(context));
     data.context.client.hl = 'en'; 
     data.query = query;
-    const params = getSearchParams("songs", "library", false);
-    data.params = params;
+    // const params = getSearchParams("songs", "library", false);
+    const params = "EgWKAQII"
+    if(params) {data.params = params;}
     const response = await makeRequest("search", data);
     return response.contents
 }
 
 const query = 'Bring me horizon';
 const results = await search(query);
-fs.writeFileSync('./results.json', JSON.stringify(results, null, 2));
+// fs.writeFileSync('./results.json', JSON.stringify(results, null, 2));
+
+const songs = extractSongs(results);
+console.log("Fetched Songs:");
+songs.forEach((song, index) => {
+    console.log(`${index + 1}. ${song.title} by ${song.artist}`);
+});
 

@@ -2,9 +2,11 @@ import fs from "fs";
 import child_process from "child_process";
 
 // Read the results from the JSON file
-const results = JSON.parse(fs.readFileSync('./results.json', 'utf-8'));
+// const results = JSON.parse(fs.readFileSync('./results.json', 'utf-8'));
 
 // Extract songs data
+export function extractSongs(results) {
+    
 const songs = [];
 const contents = results?.tabbedSearchResultsRenderer?.tabs[0]?.tabRenderer?.content?.sectionListRenderer?.contents;
 
@@ -27,12 +29,14 @@ if (contents) {
         }
     });
 }
+return songs;
+}
 
 // Display the extracted songs
-console.log("Fetched Songs:");
-songs.forEach((song, index) => {
-    console.log(`${index + 1}. ${song.title} by ${song.artist}`);
-});
+// console.log("Fetched Songs:");
+// songs.forEach((song, index) => {
+//     console.log(`${index + 1}. ${song.title} by ${song.artist}`);
+// });
 
 // // Play a song using mpv
 // if (songs.length > 0) {

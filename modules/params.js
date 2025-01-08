@@ -62,6 +62,8 @@ export function getSearchParams(filter, scope, ignoreSpelling) {
     }
 
     // Return either params or concatenated parameters
+    console.log(param1, param2, param3);
+    console.log(params);
     return params || (param1 + param2 + param3);
 }
 
@@ -74,5 +76,6 @@ function getParam2(filter) {
         'artists': 'g',
         'playlists': 'o'
     };
+    console.log(filterParams[filter]);
     return filterParams[filter];
 }
