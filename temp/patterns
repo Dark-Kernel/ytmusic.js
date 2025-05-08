@@ -16,3 +16,8 @@ ll=function(a){var l=l===void 0?!1:l;return rM(aq(a,rHz),a,l,"Trusted Stream URL
 
 line 4455
 
+
+
+#po
+r57=function(a,l){try{return globalThis.sessionStorage.setItem(a,l),!0}catch(m){return!1}};
+

@@ -1,3 +1,4 @@
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 export function getSearchParams(filter, scope, ignoreSpelling) {
     const filteredParam1 = 'EgWKAQI';
     let params = null;
@@ -62,8 +63,8 @@ export function getSearchParams(filter, scope, ignoreSpelling) {
     }
 
     // Return either params or concatenated parameters
-    console.log(param1, param2, param3);
-    console.log(params);
+    // console.log(param1, param2, param3);
+    // console.log(params);
     return params || (param1 + param2 + param3);
 }
 
@@ -76,6 +77,66 @@ function getParam2(filter) {
         'artists': 'g',
         'playlists': 'o'
     };
-    console.log(filterParams[filter]);
+    // console.log(filterParams[filter]);
     return filterParams[filter];
 }
+
+/**
+ * Message functions for handling VisitorData encoding and decoding
+ */
+
+export function createBaseVisitorData() {
+  return { id: "", timestamp: 0 };
+}
+export const VisitorData = {
+  /**
+   * Encodes a VisitorData message to binary format
+   * @param {object} message - The VisitorData message to encode
+   * @param {BinaryWriter} [writer=new BinaryWriter()] - Binary writer instance
+   * @returns {BinaryWriter} The writer with encoded data
+   */
+  encode(message, writer = new BinaryWriter()) {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.timestamp !== 0) {
+      writer.uint32(40).int32(message.timestamp);
+    }
+    return writer;
+  },
+
+  /**
+   * Decodes a VisitorData message from binary format
+   * @param {BinaryReader|Uint8Array} input - Binary input to decode
+   * @param {number} [length] - Length of data to read
+   * @returns {object} Decoded VisitorData message
+   */
+  decode(input, length) {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVisitorData();
+    
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+          message.id = reader.string();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+          message.timestamp = reader.int32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+};

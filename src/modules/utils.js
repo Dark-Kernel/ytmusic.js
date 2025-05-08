@@ -1,4 +1,5 @@
 import { Jinter } from 'jintr';
+
 /**
  * Find a variable declaration in code using various search criteria
  * @param {string} code - The source code to search in
@@ -126,4 +127,58 @@ export function findFunction(source, args) {
   }
   
   return undefined;
+}
+
+
+export function u8ToBase64(u8){
+  return btoa(String.fromCharCode.apply(null, Array.from(u8)));
+}
+
+export function base64ToU8(base64){
+  const standard_base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+  const padded_base64 = standard_base64.padEnd(standard_base64.length + (4 - standard_base64.length % 4) % 4, '=');
+  return new Uint8Array(atob(padded_base64).split('').map((char) => char.charCodeAt(0)));
+}
+
+export function generateRandomString(length){
+  const result = [];
+
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+  for (let i = 0; i < length; i++) {
+    result.push(alphabet.charAt(Math.floor(Math.random() * alphabet.length)));
+  }
+
+  return result.join('');
+}
+
+let shim;
+export class Platform {
+  static load(platform){
+    shim = platform;
+  }
+
+  static shim(){
+    if (!shim) {
+      throw new Error('Platform is not loaded');
+    }
+    return shim;
+  }
+}
+
+export default function evaluate(code, env) {
+    const TAG = 'JsRuntime';
+  console.log(TAG, 'Evaluating JavaScript:\n', code);
+
+  const runtime = new Jinter();
+
+  for (const [ key, value ] of Object.entries(env)) {
+    runtime.scope.set(key, value);
+  }
+
+  const result = runtime.evaluate(code);
+
+  console.log(TAG, 'Done. Result:', result);
+
+  return result;
 }
